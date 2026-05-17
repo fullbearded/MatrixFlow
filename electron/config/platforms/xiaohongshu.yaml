@@ -1,0 +1,39 @@
+platform:
+  id: xiaohongshu
+  name: 小红书
+  domain: xiaohongshu.com
+  creatorCenter: https://creator.xiaohongshu.com
+  publishPage: https://creator.xiaohongshu.com/publish/publish
+  uploadPage: https://creator.xiaohongshu.com/publish/publish
+  loginPage: https://creator.xiaohongshu.com/login
+
+capabilities:
+  login: true
+  upload: true
+  publish: true
+  schedule: false
+  stats: true
+  comment: false
+
+rateLimits:
+  uploadPerHour: 8
+  publishPerDay: 30
+  minInterval: 300
+
+timeouts:
+  login: 300000
+  upload: 600000
+  publish: 120000
+
+features:
+  scheduledPublish: false
+  draft: true
+  coverImage: true
+  topics: true
+  location: true
+  commerce: false
+
+selectors:
+  version: 1.0.0
+  source: remote
+  url: https://cdn.matrixflow.app/selectors/xiaohongshu.yaml

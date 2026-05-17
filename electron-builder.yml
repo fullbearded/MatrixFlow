@@ -1,0 +1,122 @@
+appId: com.matrixflow.app
+productName: MatrixFlow
+copyright: "Copyright © 2024-2026 MatrixFlow"
+
+directories:
+  output: release
+  buildResources: resources
+
+files:
+  - dist/**/*
+  - "!dist/renderer/assets/*.map"
+  - package.json
+  - "!node_modules/**/*"
+extraResources:
+  - from: resources/stealth
+    to: stealth
+    filter:
+      - "**/*"
+
+asar: true
+asarUnpack:
+  - "**/*.node"
+  - "**/better-sqlite3/**"
+
+publish:
+  provider: github
+  owner: matrixflow
+  repo: matrixflow
+  releaseType: release
+
+mac:
+  category: public.app-category.productivity
+  icon: resources/icon.icns
+  target:
+    - target: dmg
+      arch:
+        - universal
+    - target: zip
+      arch:
+        - universal
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: resources/entitlements.mac.plist
+  entitlementsInherit: resources/entitlements.mac.plist
+  extendInfo:
+    NSDocumentsFolderUsageDescription: "MatrixFlow needs access to Documents folder to import video and content materials."
+    NSDownloadsFolderUsageDescription: "MatrixFlow needs access to Downloads folder to import video materials."
+    NSCameraUsageDescription: "MatrixFlow needs camera access to scan QR codes for platform login."
+
+dmg:
+  title: "${productName} ${version}"
+  artifactName: "${productName}-${version}-mac.${ext}"
+  window:
+    width: 540
+    height: 380
+  contents:
+    - x: 140
+      y: 180
+    - x: 400
+      y: 180
+      type: link
+      path: /Applications
+
+afterSign: scripts/notarize.js
+
+win:
+  icon: resources/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  signingHashAlgorithms:
+    - sha256
+  timeStampServer: "http://timestamp.digicert.com"
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  allowElevation: true
+  installerIcon: resources/icon.ico
+  uninstallerIcon: resources/icon.ico
+  installerHeaderIcon: resources/icon.ico
+  artifactName: "${productName}-Setup-${version}-win.${ext}"
+  shortcutName: "${productName}"
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  language: 2052
+  include: resources/installer.nsh
+
+portable:
+  artifactName: "${productName}-Portable-${version}-win.${ext}"
+
+linux:
+  icon: resources/icons
+  category: Utility
+  target:
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64
+  maintainer: "MatrixFlow Team"
+  vendor: "MatrixFlow"
+  synopsis: "Multi-platform content distribution desktop application"
+  description: "MatrixFlow - One-stop multi-platform content management and distribution tool."
+
+appImage:
+  artifactName: "${productName}-${version}-linux.AppImage"
+
+deb:
+  artifactName: "${productName}_${version}_amd64.deb"
+  depends:
+    - libnotify4
+    - libxtst6
+    - libnss3
+
+npmRebuild: true

@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+mcp-server/node_modules/
+
+# Build output
+dist/
+out/
+mcp-server/dist/
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Test
+coverage/
+.nyc_output/
+
+# Electron
+release/
+
+# Database (local dev)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Temp files
+*.tmp
+*.temp
+.cache/
+
+# Test video
+test-video.mp4
+
+# Serena
+.serena/
+
+# Runtime data
+data/
+
+# Generated screenshots
+screenshots/

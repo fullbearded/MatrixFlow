@@ -1,0 +1,23 @@
+platformId: kuaishou
+platformName: 快手
+domain: kuaishou.com
+
+urls:
+  creator: https://cp.kuaishou.com/
+  upload: https://cp.kuaishou.com/article/publish/video
+  publish: https://cp.kuaishou.com/article/publish/video
+  login: https://cp.kuaishou.com/
+  contentManage: https://cp.kuaishou.com/article/manage/video
+  statsOverview: https://cp.kuaishou.com/data/overview
+  statsContent: https://cp.kuaishou.com/data/content
+
+rateLimit:
+  hourly: 6
+  daily: 25
+  burst: 2
+
+capabilities:
+  serverScheduledPublish: true
+  maxScheduleDays: 14
+  comment: true
+  image: true

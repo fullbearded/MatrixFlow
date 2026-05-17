@@ -1,0 +1,67 @@
+# 抖音平台配置
+# 设计文档要求限流配置：hourly: 10, daily: 50, burst: 3
+
+platform:
+  id: douyin
+  name: 抖音
+  domain: douyin.com
+
+urls:
+  creator: https://creator.douyin.com/creator-micro/home
+  upload: https://creator.douyin.com/creator-micro/content/upload
+  publish: https://creator.douyin.com/creator-micro/content/publish
+  login: https://creator.douyin.com/
+  contentManage: https://creator.douyin.com/creator-micro/content/manage
+  statsOverview: https://creator.douyin.com/creator-micro/data/overview
+  statsContent: https://creator.douyin.com/creator-micro/data/content
+
+selectors:
+  login:
+    qrCode: ".qrcode-image"
+    qrStatus: ".qrcode-status"
+  upload:
+    uploadButton: 'input[type="file"]'
+    titleInput: '.editor-kit-title input'
+    descInput: '.ql-editor'
+    publishButton: '.publish-btn'
+    coverSelect: '.cover-selector'
+  schedule:
+    scheduleToggle: '.schedule-toggle'
+    datePicker: '.date-picker'
+    timePicker: '.time-picker'
+  verify:
+    captcha: '.captcha-container'
+    smsCode: '.sms-verify'
+
+rateLimit:
+  hourly: 10
+  daily: 50
+  burst: 3
+
+capabilities:
+  serverScheduledPublish: true
+  maxScheduleDays: 30
+  comment: true
+  image: true
+
+actions:
+  uploadVideo:
+    - name: "点击上传按钮"
+      selector: "selectors.upload.uploadButton"
+      type: "upload"
+    - name: "填写标题"
+      selector: "selectors.upload.titleInput"
+      type: "fill"
+      waitAfter: 500
+    - name: "填写描述"
+      selector: "selectors.upload.descInput"
+      type: "fill"
+    - name: "点击发布"
+      selector: "selectors.upload.publishButton"
+      type: "click"
+
+templates:
+  - name: "日常内容"
+    fields: [话题, 地理位置, 允许合拍, 允许评论, 允许下载]
+  - name: "活动推广"
+    fields: [话题, 活动, 地理位置, 允许合拍]

@@ -1,0 +1,39 @@
+platform:
+  id: channels
+  name: 微信视频号
+  domain: channels.weixin.qq.com
+  creatorCenter: https://channels.weixin.qq.com
+  publishPage: https://channels.weixin.qq.com/platform/post/create
+  uploadPage: https://channels.weixin.qq.com/platform/post/create
+  loginPage: https://channels.weixin.qq.com/
+
+capabilities:
+  login: true
+  upload: true
+  publish: true
+  schedule: true
+  stats: true
+  comment: false
+
+rateLimits:
+  uploadPerHour: 5
+  publishPerDay: 20
+  minInterval: 600
+
+timeouts:
+  login: 300000
+  upload: 600000
+  publish: 120000
+
+features:
+  scheduledPublish: true
+  draft: true
+  coverImage: true
+  topics: false
+  location: false
+  commerce: false
+
+selectors:
+  version: 1.0.0
+  source: remote
+  url: https://cdn.matrixflow.app/selectors/channels.yaml

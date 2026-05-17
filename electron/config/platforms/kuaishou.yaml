@@ -1,0 +1,39 @@
+platform:
+  id: kuaishou
+  name: 快手
+  domain: kuaishou.com
+  creatorCenter: https://cp.kuaishou.com
+  publishPage: https://cp.kuaishou.com/article/publish/video
+  uploadPage: https://cp.kuaishou.com/article/publish/video
+  loginPage: https://cp.kuaishou.com/
+
+capabilities:
+  login: true
+  upload: true
+  publish: true
+  schedule: true
+  stats: true
+  comment: false
+
+rateLimits:
+  uploadPerHour: 10
+  publishPerDay: 40
+  minInterval: 300
+
+timeouts:
+  login: 300000
+  upload: 600000
+  publish: 120000
+
+features:
+  scheduledPublish: true
+  draft: true
+  coverImage: true
+  topics: true
+  location: true
+  commerce: true
+
+selectors:
+  version: 1.0.0
+  source: remote
+  url: https://cdn.matrixflow.app/selectors/kuaishou.yaml

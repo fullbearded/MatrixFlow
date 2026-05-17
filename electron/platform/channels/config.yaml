@@ -1,0 +1,49 @@
+platform:
+  id: channels
+  name: 微信视频号
+  domain: weixin.qq.com
+
+urls:
+  creator_home: https://channels.weixin.qq.com/
+  upload: https://channels.weixin.qq.com/platform/post/create
+  content_manage: https://channels.weixin.qq.com/platform/post/manage
+  stats: https://channels.weixin.qq.com/platform/dataCenter
+
+login:
+  method: wechat_qrcode
+  timeout_seconds: 300
+  qr_code_validity_seconds: 300
+  flow:
+    - 打开 channels.weixin.qq.com
+    - 页面直接显示微信二维码（无需切换 tab）
+    - 用户用微信扫描二维码
+    - 在手机微信上确认登录
+    - 页面自动跳转到创作者中心
+
+upload:
+  max_file_size_mb: 1024
+  supported_formats:
+    - mp4
+    - mov
+    - avi
+    - mkv
+  max_description_length: 1000
+  max_tags: 10
+  has_title_field: false
+
+rate_limit:
+  hourly: 8
+  daily: 30
+  burst: 2
+
+capabilities:
+  server_scheduled_publish: true
+  max_schedule_days: 7
+  comment: true
+  image: true
+
+notes:
+  - 视频号登录必须使用微信扫码，不支持手机号或其他方式
+  - 视频号没有独立的"标题"字段，只有描述
+  - 二维码有效期约 5 分钟，过期需要刷新
+  - Cookie 存储在 channels.weixin.qq.com 域名下

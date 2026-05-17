@@ -1,0 +1,45 @@
+# 小红书平台配置
+# 设计文档要求限流配置：hourly: 5, daily: 20, burst: 2
+
+platform:
+  id: xiaohongshu
+  name: 小红书
+  domain: xiaohongshu.com
+
+urls:
+  creator: https://creator.xiaohongshu.com/
+  upload: https://creator.xiaohongshu.com/publish/publish
+  login: https://creator.xiaohongshu.com/
+  contentManage: https://creator.xiaohongshu.com/content/manage
+  statsOverview: https://creator.xiaohongshu.com/data/overview
+  statsContent: https://creator.xiaohongshu.com/data/content
+
+selectors:
+  login:
+    qrCode: ".qrcode-img"
+    qrStatus: ".login-status"
+  upload:
+    uploadButton: 'input[type="file"]'
+    titleInput: '.title-input'
+    descInput: '.desc-input'
+    publishButton: '.publish-btn'
+    coverSelect: '.cover-selector'
+  schedule:
+    scheduleToggle: '.schedule-toggle'
+    datePicker: '.date-picker'
+    timePicker: '.time-picker'
+
+rateLimit:
+  hourly: 5
+  daily: 20
+  burst: 2
+
+capabilities:
+  serverScheduledPublish: false
+  maxScheduleDays: 0
+  comment: true
+  image: true
+
+notes:
+  - 小红书不支持服务端定时发布，schedule 方法返回提示
+  - 小红书平台风控严格，建议使用有头模式
