@@ -67,6 +67,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { Document, Loading, Star, Clock } from '@element-plus/icons-vue';
+import DOMPurify from 'dompurify';
 
 interface WeeklyReport {
   id: string;
@@ -114,11 +115,11 @@ async function generateReport() {
   }
 }
 
-/** Simple markdown → HTML */
+/** Simple markdown → HTML (sanitized via DOMPurify) */
 const renderedContent = computed(() => {
   if (!currentReport.value?.content) return '';
   const raw = currentReport.value.content;
-  return raw
+  const html = raw
     .split('\n')
     .map((line: string) => {
       // Headers
@@ -138,6 +139,7 @@ const renderedContent = computed(() => {
       return `<p class="md-p">${inlineFormat(line)}</p>`;
     })
     .join('\n');
+  return DOMPurify.sanitize(html);
 });
 
 function inlineFormat(text: string): string {

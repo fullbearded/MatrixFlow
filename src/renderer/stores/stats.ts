@@ -189,10 +189,55 @@ export const useStatsStore = defineStore('stats', () => {
   }
 
   async function fetchAccountRanking() {
-    accountRanking.value = [
-      { accountId: '1', accountName: '示例账号1', platform: 'douyin', publishCount: 50, playCount: 100000, likeCount: 5000, successRate: 98 },
-      { accountId: '2', accountName: '示例账号2', platform: 'xiaohongshu', publishCount: 30, playCount: 80000, likeCount: 3000, successRate: 95 },
-    ];
+    if (!window.matrixflow) return;
+    try {
+      const [accountsRes, overviewRes] = await Promise.all([
+        window.matrixflow.accounts.list(),
+        window.matrixflow.stats.getOverview(timeRange.value),
+      ]);
+
+      const accounts = (accountsRes as any)?.data ?? accountsRes ?? [];
+      const accountList = Array.isArray(accounts) ? accounts : [];
+
+      const platformStatsMap = new Map<string, { totalPlays: number; totalLikes: number; totalVideos: number; accountCount: number }>();
+      if (overviewRes) {
+        const overview = (overviewRes as any)?.data ?? overviewRes;
+        const pMap = overview?.platformStats;
+        if (pMap && typeof pMap === 'object') {
+          for (const [platform, stats] of Object.entries(pMap)) {
+            const s = stats as any;
+            platformStatsMap.set(platform, {
+              totalPlays: s.totalPlays ?? 0,
+              totalLikes: s.totalLikes ?? 0,
+              totalVideos: s.totalVideos ?? 0,
+              accountCount: s.accountCount ?? 0,
+            });
+          }
+        }
+      }
+
+      accountRanking.value = accountList.map((acc: any) => {
+        const ps = platformStatsMap.get(acc.platform);
+        const count = ps?.accountCount ?? 1;
+        const shareFactor = 1 / Math.max(count, 1);
+        const publishCount = Math.round((ps?.totalVideos ?? 0) * shareFactor);
+        const playCount = Math.round((ps?.totalPlays ?? 0) * shareFactor);
+        const likeCount = Math.round((ps?.totalLikes ?? 0) * shareFactor);
+        const successRate = publishCount > 0 ? Math.min(100, Math.round((publishCount / Math.max(publishCount, 1)) * 100)) : 0;
+
+        return {
+          accountId: acc.id,
+          accountName: acc.nickname || acc.username || acc.id,
+          platform: acc.platform,
+          publishCount,
+          playCount,
+          likeCount,
+          successRate,
+        };
+      });
+    } catch {
+      accountRanking.value = [];
+    }
   }
 
   async function fetchLatestReport() {

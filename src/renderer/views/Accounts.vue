@@ -141,6 +141,7 @@ import { ref, computed, onMounted } from 'vue';
 import { Plus, Grid } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { useAccountStore } from '@/renderer/stores/account';
+import { useGroupStore } from '@/renderer/stores/group';
 import type { Account } from '@/renderer/stores/account';
 import Loading from '@/renderer/components/common/Loading.vue';
 import Empty from '@/renderer/components/common/Empty.vue';
@@ -149,6 +150,7 @@ import BindAccountDialog from '@/renderer/components/account/BindAccountDialog.v
 import AccountDetailDialog from '@/renderer/components/account/AccountDetailDialog.vue';
 
 const accountStore = useAccountStore();
+const groupStore = useGroupStore();
 
 // 筛选状态
 const platformFilter = ref('');
@@ -160,12 +162,10 @@ const selectedAccount = ref<Account | null>(null);
 const selectedIds = ref<string[]>([]);
 const batchGroupId = ref('');
 
-// 分组数据（后续从独立分组 store 获取）
-const mockGroups = ref<Array<{ id: string; name: string }>>([
-  { id: 'g1', name: '默认分组' },
-  { id: 'g2', name: '测试号' },
-  { id: 'g3', name: '主力号' },
-]);
+// 分组数据（从 group store 获取）
+const mockGroups = computed(() =>
+  groupStore.groups.map((g) => ({ id: g.id, name: g.name }))
+);
 
 // 筛选后的账号列表
 const filteredAccounts = computed(() => {
@@ -195,6 +195,7 @@ const cookieInvalidCount = computed(() =>
 
 onMounted(() => {
   accountStore.fetchAccounts();
+  groupStore.fetchGroups();
 });
 
 function handleRefresh() {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
-import { useCommentStore } from '@/stores/comment';
+import { useCommentStore } from '@/renderer/stores/comment';
 
 const commentStore = useCommentStore();
 
