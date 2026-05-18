@@ -81,12 +81,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/renderer/views/Settings.vue'),
         meta: { title: '设置', icon: 'Setting' },
       },
-      {
-        path: 'license',
-        name: 'License',
-        component: () => import('@/renderer/views/License.vue'),
-        meta: { title: '许可证', icon: 'Key' },
-      },
+
     ],
   },
 ];

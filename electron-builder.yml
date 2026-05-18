@@ -34,10 +34,10 @@ mac:
   target:
     - target: dmg
       arch:
-        - universal
+        - arm64
     - target: zip
       arch:
-        - universal
+        - arm64
   hardenedRuntime: true
   gatekeeperAssess: false
   entitlements: resources/entitlements.mac.plist
@@ -72,9 +72,6 @@ win:
     - target: portable
       arch:
         - x64
-  signingHashAlgorithms:
-    - sha256
-  timeStampServer: "http://timestamp.digicert.com"
 
 nsis:
   oneClick: false
