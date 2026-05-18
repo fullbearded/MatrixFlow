@@ -55,7 +55,7 @@
     "@vitejs/plugin-vue": "^5.0.0",
     "@vitest/coverage-v8": "^4.1.6",
     "concurrently": "^8.2.2",
-    "electron": "^41.6.0",
+    "electron": "^42.1.0",
     "electron-builder": "^26.8.1",
     "happy-dom": "^20.9.0",
     "tsx": "^4.19.0",

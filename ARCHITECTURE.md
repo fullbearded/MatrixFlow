@@ -139,6 +139,42 @@ SecurityLayer
   |     +-- 在线激活
   |     +-- 离线激活
   |     +-- 设备绑定
+  +-- SignatureVerifier
+        +-- Ed25519 (远程选择器签名验证)
+```
+
+### 8. 签名验证 (SignatureVerifier)
+
+使用 Node.js 内置 `crypto.verify` 对远程 YAML 选择器进行 Ed25519 签名验证，防止供应链攻击。
+
+- 公钥硬编码在 `electron/config/selector-public-key.ts`
+- 支持 strict/loose 模式（向后兼容）
+- SelectorUpdateService 在 `yaml.parse()` 前验证原始数据
+
+### 9. Worker Threads (BrowserAutomationWorker)
+
+使用 Node.js Worker Threads 实现浏览器自动化任务的并行执行：
+
+- 主线程与 Worker 通过 MessagePort 通信
+- 支持任务取消和进度上报
+- 自动资源回收和错误恢复
+
+### 10. 错误监控 (Sentry)
+
+```typescript
+SentryInit
+  +-- scrubEvent() — 脱敏处理（移除 Cookie/Token/IP）
+  +-- DSN 配置（环境变量）
+  +-- 集成 Electron crashReporter
+```
+
+### 11. 通知服务 (NotificationService)
+
+```typescript
+NotificationService
+  +-- 系统通知 (Electron Notification API)
+  +-- 通知偏好配置
+  +-- 测试通知发送
 ```
 
 ## 数据流
@@ -176,6 +212,14 @@ SecurityLayer
 - `comment:*` - 评论
 - `license:*` - License
 - `update:*` - 自动更新
+- `draft:*` - 草稿
+- `proxy:*` - 代理
+- `fingerprint:*` - 指纹
+- `monitor:*` - 监控
+- `report:*` - 报表
+- `data:*` - 数据管理
+- `settings:*` - 设置
+- `notification:*` - 通知
 
 ## 设计决策
 

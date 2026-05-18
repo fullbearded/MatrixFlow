@@ -277,6 +277,7 @@ const api = {
   },
 
   onPublishStatus: (callback: (batch: unknown[]) => void) => {
+    if (!ALLOWED_CHANNELS.has('publish:status')) return () => {};
     const handler = (_event: Electron.IpcRendererEvent, batch: unknown[]) =>
       callback(batch);
     ipcRenderer.on('publish:status', handler);
@@ -284,6 +285,7 @@ const api = {
   },
 
   onTaskProgress: (callback: (taskId: string, progress: number, message?: string) => void) => {
+    if (!ALLOWED_CHANNELS.has('task:progress')) return () => {};
     const handler = (_event: Electron.IpcRendererEvent, taskId: string, progress: number, message?: string) =>
       callback(taskId, progress, message);
     ipcRenderer.on('task:progress', handler);
@@ -291,6 +293,7 @@ const api = {
   },
 
   onTaskStatusChange: (callback: (taskId: string, status: string, data?: unknown) => void) => {
+    if (!ALLOWED_CHANNELS.has('task:status-change')) return () => {};
     const handler = (_event: Electron.IpcRendererEvent, taskId: string, status: string, data?: unknown) =>
       callback(taskId, status, data);
     ipcRenderer.on('task:status-change', handler);

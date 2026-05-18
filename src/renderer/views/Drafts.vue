@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { useDraftStore } from '@/stores/draft';
+import { useDraftStore } from '@/renderer/stores/draft';
 
 const draftStore = useDraftStore();
 

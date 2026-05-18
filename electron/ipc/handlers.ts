@@ -80,7 +80,7 @@ const CHANNEL = {
   STATS_OVERVIEW: 'stats:overview',
   STATS_PLATFORM: 'stats:platform',
   STATS_TREND: 'stats:trend',
-  DB_QUERY: 'db:query',
+
   AI_PREPUBLISH_CHECK: 'ai:prePublishCheck',
   AI_OPTIMIZE_RULE: 'ai:optimizeRule',
   AI_GET_COST_SUMMARY: 'ai:getCostSummary',
@@ -558,13 +558,6 @@ export function registerIpcHandlers(): void {
     } catch {
       return [];
     }
-  });
-
-  // 安全警告: db:query 已禁用，避免任意 SQL 执行风险
-  // 如需数据访问，请使用具体的 IPC 通道（如 account:list, content:list 等）
-  ipcMain.handle(CHANNEL.DB_QUERY, async () => {
-    logger.warn('db:query 接口已被禁用（安全原因）');
-    return { success: false, message: '此接口已禁用，请使用具体的数据访问 API' };
   });
 
   ipcMain.handle(CHANNEL.AI_PREPUBLISH_CHECK, async (_e, context: PrePublishContext) => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
-import { useLicenseStore } from '@/stores/license';
+import { useLicenseStore } from '@/renderer/stores/license';
 
 const licenseStore = useLicenseStore();
 
