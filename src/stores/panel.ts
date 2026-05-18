@@ -23,6 +23,13 @@ export const usePanelStore = defineStore('panel', () => {
 
   const focusedPanel = computed(() => panels.value.find((p) => p.id === focusedPanelId.value));
 
+  async function loadPanels() {
+    const result = await window.matrixflow.panel.list();
+    if (result.success && result.data) {
+      panels.value = result.data;
+    }
+  }
+
   async function loadAvailableAccounts() {
     const result = await window.matrixflow.account.list();
     if (result.success && result.data) {
@@ -63,6 +70,7 @@ export const usePanelStore = defineStore('panel', () => {
     focusedPanelId,
     focusedPanel,
     maxPanels,
+    loadPanels,
     loadAvailableAccounts,
     openPanel,
     closePanel,

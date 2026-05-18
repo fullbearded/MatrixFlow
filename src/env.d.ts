@@ -1,5 +1,10 @@
 /// <reference types="vite/client" />
 
+// Electron extends the Web File API with a `path` property
+interface File {
+  readonly path: string;
+}
+
 declare module '*.vue' {
   import type { DefineComponent } from 'vue';
   const component: DefineComponent<{}, {}, any>;
@@ -149,6 +154,20 @@ interface MatrixFlowAPI {
     download: () => Promise<any>;
     install: () => Promise<any>;
     getStatus: () => Promise<any>;
+  };
+
+  data: {
+    createBackup: () => Promise<IpcResult<{ id: string; name: string; size: number; createdAt: string }>>;
+    listBackups: () => Promise<IpcResult<Array<{ id: string; name: string; size: number; createdAt: string }>>>;
+    restoreBackup: (backupId: string) => Promise<IpcResult<null>>;
+    deleteBackup: (backupId: string) => Promise<IpcResult<null>>;
+    clearData: (type: 'logs' | 'cache' | 'all') => Promise<IpcResult<null>>;
+  };
+
+  notification: {
+    getPreferences: () => Promise<IpcResult<Record<string, unknown>>>;
+    updatePreferences: (prefs: Record<string, unknown>) => Promise<IpcResult<null>>;
+    test: () => Promise<IpcResult<null>>;
   };
 
   fingerprint: {

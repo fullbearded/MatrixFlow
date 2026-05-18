@@ -114,11 +114,12 @@ async function loadSettings() {
 async function loadBackups() {
   loadingBackups.value = true;
   try {
-    // 模拟备份数据（实际应从后端获取）
-    backups.value = [
-      { id: '1', name: 'backup-2026-05-17.db', size: 1024000, createdAt: '2026-05-17T10:00:00' },
-      { id: '2', name: 'backup-2026-05-16.db', size: 980000, createdAt: '2026-05-16T10:00:00' },
-    ];
+    const result = await window.matrixflow.data.listBackups();
+    if (result.success && result.data) {
+      backups.value = result.data;
+    }
+  } catch {
+    // ignore
   } finally {
     loadingBackups.value = false;
   }
@@ -132,15 +133,13 @@ async function handleAutoBackupChange(value: boolean) {
 async function handleCreateBackup() {
   backingUp.value = true;
   try {
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    const name = `backup-${new Date().toISOString().slice(0, 10)}.db`;
-    backups.value.unshift({
-      id: Date.now().toString(),
-      name,
-      size: 1000000 + Math.random() * 500000,
-      createdAt: new Date().toISOString(),
-    });
-    ElMessage.success('备份创建成功');
+    const result = await window.matrixflow.data.createBackup();
+    if (result.success && result.data) {
+      backups.value.unshift(result.data);
+      ElMessage.success('备份创建成功');
+    } else {
+      ElMessage.error(result.message || '备份创建失败');
+    }
   } catch {
     ElMessage.error('备份创建失败');
   } finally {
@@ -157,8 +156,12 @@ async function handleRestore(backup: Backup) {
     );
 
     backup.restoring = true;
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    ElMessage.success('数据恢复成功，请重启应用');
+    const result = await window.matrixflow.data.restoreBackup(backup.id);
+    if (result.success) {
+      ElMessage.success('数据恢复成功，请重启应用');
+    } else {
+      ElMessage.error(result.message || '数据恢复失败');
+    }
   } catch {
     // 用户取消
   } finally {
@@ -169,8 +172,13 @@ async function handleRestore(backup: Backup) {
 async function handleDeleteBackup(backup: Backup) {
   try {
     await ElMessageBox.confirm(`确定删除备份 "${backup.name}" 吗？`, '确认删除', { type: 'warning' });
-    backups.value = backups.value.filter(b => b.id !== backup.id);
-    ElMessage.success('备份已删除');
+    const result = await window.matrixflow.data.deleteBackup(backup.id);
+    if (result.success) {
+      backups.value = backups.value.filter(b => b.id !== backup.id);
+      ElMessage.success('备份已删除');
+    } else {
+      ElMessage.error(result.message || '删除失败');
+    }
   } catch {
     // 用户取消
   }
@@ -179,7 +187,12 @@ async function handleDeleteBackup(backup: Backup) {
 async function handleClearLogs() {
   try {
     await ElMessageBox.confirm('确定清理所有日志文件吗？', '确认清理', { type: 'warning' });
-    ElMessage.success('日志文件已清理');
+    const result = await window.matrixflow.data.clearData('logs');
+    if (result.success) {
+      ElMessage.success('日志文件已清理');
+    } else {
+      ElMessage.error(result.message || '清理失败');
+    }
   } catch {
     // 用户取消
   }
@@ -188,7 +201,12 @@ async function handleClearLogs() {
 async function handleClearCache() {
   try {
     await ElMessageBox.confirm('确定清理所有缓存数据吗？', '确认清理', { type: 'warning' });
-    ElMessage.success('缓存数据已清理');
+    const result = await window.matrixflow.data.clearData('cache');
+    if (result.success) {
+      ElMessage.success('缓存数据已清理');
+    } else {
+      ElMessage.error(result.message || '清理失败');
+    }
   } catch {
     // 用户取消
   }
@@ -201,7 +219,12 @@ async function handleClearAllData() {
       '危险操作',
       { type: 'error', confirmButtonText: '确定清空', cancelButtonText: '取消' }
     );
-    ElMessage.success('数据已清空');
+    const result = await window.matrixflow.data.clearData('all');
+    if (result.success) {
+      ElMessage.success('数据已清空');
+    } else {
+      ElMessage.error(result.message || '清空失败');
+    }
   } catch {
     // 用户取消
   }

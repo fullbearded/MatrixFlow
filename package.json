@@ -1,6 +1,6 @@
 {
   "name": "matrixflow",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MatrixFlow — 多平台内容分发桌面应用",
   "main": "dist/electron/main.js",
   "scripts": {
@@ -31,6 +31,7 @@
     "release": "bash scripts/release.sh"
   },
   "dependencies": {
+    "@sentry/electron": "^7.13.0",
     "better-sqlite3": "^12.10.0",
     "echarts": "^6.0.0",
     "electron-log": "^5.1.0",

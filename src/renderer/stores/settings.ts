@@ -15,6 +15,12 @@ export interface AppSettings {
   chromePath: string;
   fingerprintBrowserPath: string;
   cdpEndpoint: string;
+  onboardingCompleted: boolean;
+  notificationEnabled: boolean;
+  notificationSound: boolean;
+  notificationMonitorAlerts: boolean;
+  notificationAnomalyAlerts: boolean;
+  notificationCriticalOnly: boolean;
 }
 
 const defaultSettings: AppSettings = {
@@ -31,6 +37,12 @@ const defaultSettings: AppSettings = {
   chromePath: '',
   fingerprintBrowserPath: '',
   cdpEndpoint: '',
+  onboardingCompleted: false,
+  notificationEnabled: true,
+  notificationSound: true,
+  notificationMonitorAlerts: true,
+  notificationAnomalyAlerts: true,
+  notificationCriticalOnly: false,
 };
 
 export const useSettingsStore = defineStore('settings', () => {

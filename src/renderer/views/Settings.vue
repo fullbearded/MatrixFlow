@@ -164,6 +164,12 @@
         </div>
       </el-tab-pane>
 
+      <el-tab-pane label="通知设置" name="notification">
+        <div class="settings-card">
+          <NotificationSettings />
+        </div>
+      </el-tab-pane>
+
       <el-tab-pane label="数据管理" name="data">
         <div class="settings-card">
           <DataManagementSettings />
@@ -187,6 +193,7 @@ import FingerprintSettings from '@/renderer/components/settings/FingerprintSetti
 import ProxySettings from '@/renderer/components/settings/ProxySettings.vue';
 import PlatformSettings from '@/renderer/components/settings/PlatformSettings.vue';
 import LicenseSettings from '@/renderer/components/settings/LicenseSettings.vue';
+import NotificationSettings from '@/renderer/components/settings/NotificationSettings.vue';
 import DataManagementSettings from '@/renderer/components/settings/DataManagementSettings.vue';
 import AboutPanel from '@/renderer/components/settings/AboutPanel.vue';
 

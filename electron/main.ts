@@ -1,3 +1,6 @@
+import { initSentryMain } from './core/SentryInit';
+initSentryMain();
+
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import { AppLifecycle } from './core/AppLifecycle';
@@ -12,11 +15,7 @@ import { platformConfigLoader } from './core/PlatformConfigLoader';
 import { registerIpcHandlers } from './ipc/handlers';
 import { autoUpdaterService } from './core/AutoUpdater';
 import { initDatabase, closeDatabase } from './data/Database';
-import { PlatformRegistry } from './platform/base/PlatformRegistry';
-import { douyinAdapter } from './platform/douyin';
-import { xiaohongshuAdapter } from './platform/xiaohongshu';
-import { channelsAdapter } from './platform/channels';
-import { kuaishouAdapter } from './platform/kuaishou';
+import { registerAllAdapters, PlatformRegistry } from './platform/adapter';
 import { multiPanelService } from './services/MultiPanelService';
 
 const logger = new Logger('Main');
@@ -85,10 +84,7 @@ app.whenReady().then(async () => {
   const lifecycle = new AppLifecycle(config, eventBus);
   await lifecycle.initialize();
 
-  PlatformRegistry.register(douyinAdapter);
-  PlatformRegistry.register(xiaohongshuAdapter);
-  PlatformRegistry.register(channelsAdapter);
-  PlatformRegistry.register(kuaishouAdapter);
+  registerAllAdapters();
   logger.info(`已注册平台: ${PlatformRegistry.getSupportedPlatforms().join(', ')}`);
 
   registerIpcHandlers();

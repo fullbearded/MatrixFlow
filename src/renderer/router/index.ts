@@ -1,7 +1,21 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router';
 import MainLayout from '@/renderer/layouts/MainLayout.vue';
+import OnboardingLayout from '@/renderer/layouts/OnboardingLayout.vue';
 
 const routes: RouteRecordRaw[] = [
+  {
+    path: '/onboarding',
+    component: OnboardingLayout,
+    meta: { requiresOnboarding: false },
+    children: [
+      {
+        path: '',
+        name: 'Onboarding',
+        component: () => import('@/renderer/views/Onboarding.vue'),
+        meta: { requiresOnboarding: false },
+      },
+    ],
+  },
   {
     path: '/',
     component: MainLayout,
@@ -76,8 +90,35 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to) => {
+let settingsFetched = false;
+
+router.beforeEach(async (to) => {
   if (to.matched.length === 0) {
+    return { name: 'Accounts' };
+  }
+
+  if (!window.matrixflow) return;
+
+  if (!settingsFetched) {
+    const { useSettingsStore } = await import('@/renderer/stores/settings');
+    const settingsStore = useSettingsStore();
+    await settingsStore.fetchSettings();
+    settingsFetched = true;
+  }
+
+  const { useSettingsStore } = await import('@/renderer/stores/settings');
+  const settingsStore = useSettingsStore();
+  const completed = settingsStore.settings.onboardingCompleted;
+
+  const requiresOnboarding = to.matched.every(
+    (r) => r.meta.requiresOnboarding !== false,
+  );
+
+  if (!completed && requiresOnboarding) {
+    return { name: 'Onboarding' };
+  }
+
+  if (completed && to.name === 'Onboarding') {
     return { name: 'Accounts' };
   }
 });

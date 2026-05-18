@@ -7,7 +7,8 @@ import { publishService } from '../services/PublishService';
 import { contentService } from '../services/ContentService';
 import { groupService } from '../services/GroupService';
 import { statsService } from '../services/StatsService';
-import { getDatabase } from '../data/Database';
+import { getDatabase, createBackup, listBackups, restoreBackup, deleteBackup, clearData } from '../data/Database';
+import type { BackupInfo } from '../data/Database';
 import { getAIService } from '../ai/AIService';
 import { anomalyService } from '../services/AnomalyService';
 import { monitorService } from '../services/MonitorService';
@@ -19,6 +20,7 @@ import { licenseService } from '../services/LicenseService';
 import { proxyService } from '../services/ProxyService';
 import { fingerprintTemplateRepo } from '../data/repositories/FingerprintTemplateRepository';
 import { autoUpdaterService } from '../core/AutoUpdater';
+import { notificationService } from '../core/NotificationService';
 import type { PrePublishContext, RuleOptimizationContext } from '../ai/types';
 import type { Account } from '../services/types/account';
 import type {
@@ -133,6 +135,16 @@ const CHANNEL = {
   UPDATE_DOWNLOAD: 'update:download',
   UPDATE_INSTALL: 'update:install',
   UPDATE_GET_STATUS: 'update:getStatus',
+
+  DATA_CREATE_BACKUP: 'data:createBackup',
+  DATA_LIST_BACKUPS: 'data:listBackups',
+  DATA_RESTORE_BACKUP: 'data:restoreBackup',
+  DATA_DELETE_BACKUP: 'data:deleteBackup',
+  DATA_CLEAR: 'data:clear',
+
+  NOTIFICATION_GET_PREFERENCES: 'notification:getPreferences',
+  NOTIFICATION_UPDATE_PREFERENCES: 'notification:updatePreferences',
+  NOTIFICATION_TEST: 'notification:test',
 } as const;
 
 export interface IpcResult<T = unknown> {
@@ -825,6 +837,41 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(CHANNEL.UPDATE_GET_STATUS, () => {
     return ok(autoUpdaterService.getStatus());
+  });
+
+  // ─── 数据管理 ──────────────────────────────────────────
+
+  ipcMain.handle(CHANNEL.DATA_CREATE_BACKUP, async (): Promise<IpcResult<BackupInfo>> => {
+    return wrap(async () => createBackup());
+  });
+
+  ipcMain.handle(CHANNEL.DATA_LIST_BACKUPS, async (): Promise<IpcResult<BackupInfo[]>> => {
+    return wrap(async () => listBackups());
+  });
+
+  ipcMain.handle(CHANNEL.DATA_RESTORE_BACKUP, async (_e, backupId: string): Promise<IpcResult<null>> => {
+    return wrap(async () => { restoreBackup(backupId); return null; });
+  });
+
+  ipcMain.handle(CHANNEL.DATA_DELETE_BACKUP, async (_e, backupId: string): Promise<IpcResult<null>> => {
+    return wrap(async () => { deleteBackup(backupId); return null; });
+  });
+
+  ipcMain.handle(CHANNEL.DATA_CLEAR, async (_e, type: 'logs' | 'cache' | 'all'): Promise<IpcResult<null>> => {
+    return wrap(async () => { clearData(type); return null; });
+  });
+
+  ipcMain.handle(CHANNEL.NOTIFICATION_GET_PREFERENCES, async () => {
+    return ok(notificationService.getPreferences());
+  });
+
+  ipcMain.handle(CHANNEL.NOTIFICATION_UPDATE_PREFERENCES, async (_e, prefs: Record<string, unknown>) => {
+    return ok(notificationService.updatePreferences(prefs));
+  });
+
+  ipcMain.handle(CHANNEL.NOTIFICATION_TEST, async () => {
+    notificationService.sendTest();
+    return ok(null);
   });
 
   logger.info('IPC 处理器已注册');

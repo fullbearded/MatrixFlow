@@ -101,6 +101,13 @@ const api = {
       ipcRenderer.invoke('platforms:getCapabilities', platformId),
   },
 
+  notification: {
+    getPreferences: () => ipcRenderer.invoke('notification:getPreferences'),
+    updatePreferences: (prefs: Record<string, unknown>) =>
+      ipcRenderer.invoke('notification:updatePreferences', prefs),
+    test: () => ipcRenderer.invoke('notification:test'),
+  },
+
   settings: {
     get: (key: string) => ipcRenderer.invoke('settings:get', key),
     set: (key: string, value: unknown) =>
@@ -243,6 +250,19 @@ const api = {
       ipcRenderer.invoke('update:install'),
     getStatus: () =>
       ipcRenderer.invoke('update:getStatus'),
+  },
+
+  data: {
+    createBackup: (): Invoke<import('./data/Database').BackupInfo> =>
+      ipcRenderer.invoke('data:createBackup'),
+    listBackups: (): Invoke<import('./data/Database').BackupInfo[]> =>
+      ipcRenderer.invoke('data:listBackups'),
+    restoreBackup: (backupId: string): Invoke<null> =>
+      ipcRenderer.invoke('data:restoreBackup', backupId),
+    deleteBackup: (backupId: string): Invoke<null> =>
+      ipcRenderer.invoke('data:deleteBackup', backupId),
+    clearData: (type: 'logs' | 'cache' | 'all'): Invoke<null> =>
+      ipcRenderer.invoke('data:clear', type),
   },
 
   on: (channel: string, callback: (...args: unknown[]) => void) => {
