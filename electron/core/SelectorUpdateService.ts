@@ -14,6 +14,7 @@ import type {
   RemoteSelectorConfig,
   SelectorUpdateResult,
 } from './types/selector';
+import { SignatureVerifier } from './SignatureVerifier';
 
 const logger = new Logger('SelectorUpdateService');
 
@@ -32,9 +33,13 @@ export class SelectorUpdateService implements ISelectorUpdateService {
   private timer: ReturnType<typeof setInterval> | null = null;
   private initialized = false;
   private remoteBaseUrl: string;
+  private strictVerification: boolean;
+  private verifier: SignatureVerifier;
 
-  private constructor(remoteBaseUrl?: string) {
+  private constructor(remoteBaseUrl?: string, strictVerification = false) {
     this.remoteBaseUrl = remoteBaseUrl ?? DEFAULT_REMOTE_BASE_URL;
+    this.strictVerification = strictVerification;
+    this.verifier = new SignatureVerifier();
     this.selectorsDir = path.join(app.getPath('userData'), 'selectors');
   }
 
@@ -196,9 +201,50 @@ export class SelectorUpdateService implements ISelectorUpdateService {
 
   private async fetchRemoteConfig(platform: string): Promise<RemoteSelectorConfig> {
     const url = `${this.remoteBaseUrl}/${platform}.yaml`;
+    const sigUrl = `${url}.sig`;
     logger.debug(`正在获取远程配置: ${url}`);
 
     const body = await this.httpGet(url, REQUEST_TIMEOUT_MS);
+
+    try {
+      const sigBody = await this.httpGet(sigUrl, REQUEST_TIMEOUT_MS);
+      const dataBuf = Buffer.from(body, 'utf-8');
+      const valid = this.verifier.verify(dataBuf, sigBody.trim());
+
+      if (!valid) {
+        const errMsg = `签名验证失败: ${platform} — 拒绝应用远程配置`;
+        logger.error(errMsg);
+        EventBus.getInstance().emit(SelectorEvents.UPDATE_FAILED, {
+          platform,
+          error: errMsg,
+        });
+        throw new Error(errMsg);
+      }
+
+      logger.debug(`平台 ${platform} 签名验证通过`);
+    } catch (err) {
+      if ((err as Error).message.startsWith('签名验证失败')) {
+        throw err;
+      }
+      const msg = (err as Error).message ?? String(err);
+      if (msg.includes('HTTP 404')) {
+        const notice = this.strictVerification
+          ? `严格模式: ${platform} 缺少签名文件，拒绝应用远程配置`
+          : `平台 ${platform} 缺少签名文件 (宽松模式，跳过验证)`;
+        logger.warn(notice);
+
+        if (this.strictVerification) {
+          EventBus.getInstance().emit(SelectorEvents.UPDATE_FAILED, {
+            platform,
+            error: notice,
+          });
+          throw new Error(notice);
+        }
+      } else {
+        logger.warn(`平台 ${platform} 签名获取异常: ${msg}`);
+      }
+    }
+
     const parsed = yaml.parse(body) as RemoteSelectorConfig;
 
     if (!parsed.version || !parsed.selectors) {
